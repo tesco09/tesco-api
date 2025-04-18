@@ -22,6 +22,7 @@ const MyPlan = require('./MyPlan');
 const Plan = require('./Plan');
 const Promo = require('./Promo');
 const Commission = require('./Commission');
+const AdminRegister = require('./AdminRegister');
 
 
 const PORT = process.env.PORT || 4000;
@@ -1615,6 +1616,84 @@ app.patch('/commission/:id', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+app.post('/admin-register', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const newAdmin = new AdminRegister({ email, password });
+    await newAdmin.save();
+
+    res.status(201).json(newAdmin);
+  } catch (error) {
+    console.error('Error creating Admin:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/admin-login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate user input
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await AdminRegister.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: { id: user._id, email: user.email }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.patch('/admin-password', async (req, res) => {
+  try {
+    const { email, previous, newPassword } = req.body;
+
+    const user = await AdminRegister.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    // Compare plain text passwords
+    if (user.password !== previous) {
+      return res.status(400).json({ message: 'Previous password does not match' });
+    }
+
+    // Update password
+    const updatedUser = await AdminRegister.findOneAndUpdate(
+      { email },
+      { password: newPassword },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(500).json({ message: 'Password not updated' });
+    }
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
