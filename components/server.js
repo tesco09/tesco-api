@@ -1413,7 +1413,7 @@ app.patch('/promo/claim/:code', async (req, res) => {
 
     const havePlan = await MyPlan.find({ userId });
     if (havePlan.length === 1 && havePlan[0].investment === 0 || havePlan.length === 0) {
-      return res.status(404).json({ message: 'Cannot claim promo' });
+      return res.status(404).json({ message: 'Buy Plan To Claim' });
     }
     // Find promo by code
     const promo = await Promo.findOne({ code }).session(session);
