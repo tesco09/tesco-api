@@ -1016,7 +1016,7 @@ app.get('/details/:id', async (req, res) => {
       totalMembers: level1.length + level2.length + level3.length,
       level1Commission: user.level1Commission,
       level2Commission: user.level2Commission,
-      level3Commission: user.level2Commission,
+      level3Commission: user.level3Commission,
       plan1: plan1.length,
       plan2: plan2.length,
       plan3: plan3.length,
