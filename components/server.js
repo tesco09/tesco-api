@@ -1593,6 +1593,7 @@ app.get('/commission/:id', async (req, res) => {
 app.patch('/commission/:id', async (req, res) => {
   try {
     const id = req.params.id;
+    const { status } = req.body;
     const updateCommission = await Commission.findByIdAndUpdate(id, req.body, {
       new: true,
     });
