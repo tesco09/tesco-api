@@ -298,32 +298,6 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.post('/admin-login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Validate user input
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    // Authenticate
-    if (email === "tescoappofficial@gmail.com" && password === "tesco0099") {
-      return res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        data: { email }
-      });
-    }
-
-    // Invalid credentials
-    return res.status(401).json({ error: 'Invalid email or password' });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
 app.delete("/login/:id", async (req, res) => {
   try {
@@ -1693,7 +1667,15 @@ app.patch('/admin-password', async (req, res) => {
   }
 });
 
-
+app.get('/admin-login', async (req, res) => {
+  try {
+    const commission = await AdminRegister.find();
+    res.status(200).json(commission);
+  } catch (error) {
+    console.error('Error fetching commission:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
