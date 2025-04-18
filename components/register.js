@@ -46,10 +46,22 @@ const registerSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  level1Commission: {
+    type: Number,
+    default: 0
+  },
+  level2Commission: {
+    type: Number,
+    default: 0
+  },
+  level3Commission: {
+    type: Number,
+    default: 0
+  },
   profileImage: {
     type: String,
   },
-  ban:{
+  ban: {
     type: Boolean,
     default: false
   }

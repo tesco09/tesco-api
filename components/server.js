@@ -600,7 +600,7 @@ app.post('/addPlan/:id', async (req, res) => {
       // Level 1 (8%)
       level1 = await Register.findOneAndUpdate(
         { generatedId: user.referalCode },
-        { $inc: { balance: investment * 8 / 100, totalCommission: investment * 8 / 100 } },
+        { $inc: { balance: investment * 8 / 100, totalCommission: investment * 8 / 100, level1Commission: investment * 8 / 100 } },
         { new: true, session }
       );
 
@@ -616,7 +616,7 @@ app.post('/addPlan/:id', async (req, res) => {
       if (level1?.referalCode) {
         level2 = await Register.findOneAndUpdate(
           { generatedId: level1.referalCode },
-          { $inc: { balance: investment * 3.5 / 100, totalCommission: investment * 3.5 / 100 } },
+          { $inc: { balance: investment * 3.5 / 100, totalCommission: investment * 3.5 / 100, level2Commission: investment * 3.5 / 100 } },
           { new: true, session }
         );
 
@@ -632,7 +632,7 @@ app.post('/addPlan/:id', async (req, res) => {
       if (level2?.referalCode) {
         level3 = await Register.findOneAndUpdate(
           { generatedId: level2.referalCode },
-          { $inc: { balance: investment * 1.5 / 100, totalCommission: investment * 1.5 / 100 } },
+          { $inc: { balance: investment * 1.5 / 100, totalCommission: investment * 1.5 / 100, level3Commission: investment * 1.5 / 100 } },
           { new: true, session }
         );
         await new Notification({
@@ -1012,11 +1012,11 @@ app.get('/details/:id', async (req, res) => {
 
     res.send({
       totalTeamDeposit,
-      totalTeamCommission: (level1TotalInvest * 8) / 100 + (level2TotalInvest * 3.5) / 100 + (level3TotalInvest * 1.5) / 100 || 0,
+      totalTeamCommission: user.level1Commission + user.level2Commission + user.level3Commission || 0,
       totalMembers: level1.length + level2.length + level3.length,
-      level1Commission: (level1TotalInvest * 8) / 100,
-      level2Commission: (level2TotalInvest * 3.5) / 100,
-      level3Commission: (level3TotalInvest * 1.5) / 100,
+      level1Commission: user.level1Commission,
+      level2Commission: user.level2Commission,
+      level3Commission: user.level2Commission,
       plan1: plan1.length,
       plan2: plan2.length,
       plan3: plan3.length,
