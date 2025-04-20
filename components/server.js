@@ -1018,8 +1018,8 @@ app.get('/details/:id', async (req, res) => {
 
 app.post('/withdraw', async (req, res) => {
   try {
-    const { sender, receiver, name, bank, amount } = req.body;
-    const newWithdraw = new Withdraw({ sender, receiver, name, bank, amount });
+    const { sender, receiver, name, bank, amount, charges } = req.body;
+    const newWithdraw = new Withdraw({ sender, receiver, name, bank, amount, charges });
     await newWithdraw.save();
     const history = new History({ userId: sender, type: 'withdraw', amount, requestId: newWithdraw._id });
     await history.save();
@@ -1044,6 +1044,19 @@ app.get('/withdraw', async (req, res) => {
   try {
     const withdraw = await Withdraw.find().sort({ _id: -1 });
     res.json(withdraw);
+  } catch (error) {
+    console.error('Error fetching withdraw', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+// .reduce((acc, u) => acc + (u.totalInvest || 0), 0);
+
+app.get('/withdraw-charges', async (req, res) => {
+  try {
+    const withdraw = await Withdraw.find().sort({ _id: -1 });
+    const approvedWithdraw = await withdraw.filter(item => item.pending === false && item.scam === false);
+    const total = await approvedWithdraw.reduce((acc, u) => acc + (u.charges || 0), 0);
+    res.json(total);
   } catch (error) {
     console.error('Error fetching withdraw', error);
     res.status(500).send('Internal Server Error');

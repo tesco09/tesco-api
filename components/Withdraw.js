@@ -27,6 +27,10 @@ const WithdrawSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    charges: {
+        type: Number,
+        default: 0
+    },
     timestamp: {
         type: Date,
         default: Date.now
