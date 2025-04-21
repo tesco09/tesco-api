@@ -20,7 +20,6 @@ const registerSchema = new mongoose.Schema({
   },
   referalCode: {
     type: String,
-    required: true,
   },
   deposit: {
     type: Number,
