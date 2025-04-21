@@ -185,8 +185,12 @@ app.post("/register", async (req, res) => {
     }
 
     const existingUser = await Register.findOne({ email }).session(session);
+    const existingReferal = await Register.findOne({ referalCode }).session(session);
     if (existingUser) {
       return res.status(400).json({ msg: "Email already exists" });
+    }
+    if (!existingReferal) {
+      return res.status(400).json({ msg: "Invalid Referral Code" });
     }
 
     const generatedId = await generateUniqueId();
