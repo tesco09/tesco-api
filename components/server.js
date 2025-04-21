@@ -185,12 +185,18 @@ app.post("/register", async (req, res) => {
     }
 
     const existingUser = await Register.findOne({ email }).session(session);
-    const existingReferal = await Register.findOne({ generatedId: referalCode }).session(session);
     if (existingUser) {
       return res.status(400).json({ msg: "Email already exists" });
     }
-    if (!existingReferal) {
-      return res.status(400).json({ msg: "Invalid Referral Code" });
+
+    const userCount = await Register.countDocuments().session(session);
+
+    // ✅ Only check referral code if not the first user
+    if (userCount > 0) {
+      const existingReferal = await Register.findOne({ generatedId: referalCode }).session(session);
+      if (!existingReferal) {
+        return res.status(400).json({ msg: "Invalid Referral Code" });
+      }
     }
 
     const generatedId = await generateUniqueId();
@@ -208,7 +214,7 @@ app.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
       generatedId: generatedId.toString(),
-      referalCode,
+      referalCode: userCount === 0 ? null : referalCode, // null for first user
     });
 
     await new Notification({
