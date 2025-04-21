@@ -156,8 +156,8 @@ app.post('/send-email', async (req, res) => {
 
   // Email options
   const mailOptions = {
-    from: email,
-    to: 'tescoappofficial@gmail.com',
+    from: 'tescoappofficial@gmail.com',
+    to: email,
     subject: subject,
     text: text,
   };
@@ -165,7 +165,7 @@ app.post('/send-email', async (req, res) => {
   try {
     // Send email
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'email sent successfully' }); // You might want to store OTP in the database or session
+    res.status(200).json({ message: 'email sent successfully' }); 
   } catch (error) {
     res.status(500).json({ message: 'Error sending email', error });
   }
@@ -567,7 +567,8 @@ app.post('/addPlan/:id', async (req, res) => {
       { new: true, session }
     );
 
-    const commissionStatus = await Commission.findById('6801eaa0dd70baf6256dd3ce');
+    const commissionId = '6801eaa0dd70baf6256dd3ce';
+    const commissionStatus = await Commission.findById(commissionId);
 
     let level1, level2, level3;
 
@@ -1582,9 +1583,14 @@ app.patch('/commission/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const { status } = req.body;
-    const updateCommission = await Commission.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    if (!id || id === 'null' || id === 'undefined') {
+      return res.status(400).json({ message: 'Invalid commission ID' });
+    }
+    const updateCommission = await Commission.findByIdAndUpdate(
+      id,
+      { status }, // update only allowed fields
+      { new: true } // return new document, validate schema
+    );
     if (!updateCommission) {
       return res.status(404).json({ message: 'Commission not found' });
     }
