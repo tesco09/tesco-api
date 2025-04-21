@@ -165,7 +165,7 @@ app.post('/send-email', async (req, res) => {
   try {
     // Send email
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'email sent successfully' }); 
+    res.status(200).json({ message: 'email sent successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error sending email', error });
   }
@@ -1366,6 +1366,25 @@ app.get('/plan', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+app.get('/plan/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(`Fetching plan with ID: ${id}`);
+
+    const plan = await Plan.findOne({ id: id });
+
+    if (!plan) {
+      return res.status(404).json({ message: 'Plan not found' });
+    }
+
+    res.status(200).json(plan);
+  } catch (error) {
+    console.error('Error fetching plan:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 
 app.patch('/plan/:id', async (req, res) => {
